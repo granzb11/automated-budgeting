@@ -3,6 +3,8 @@
 import pandas as pd
 import pandasql as ps
 import logging
+from tabulate import tabulate
+import json
 
 def create_logger() -> object:
     # Gets or creates a logger
@@ -22,10 +24,48 @@ def create_logger() -> object:
     return logger
 
 
+def get_df_from_csv(filename: str) -> object:
+    """
+    This will return a dataframe object given a csv filename.
+    :param filename: Name of file to read
+    :return object: Dataframe object
+    """
+    return pd.read_csv(filename)
+
+
+def get_csv_from_df(dataframe: object):
+    """
+    This will return a string that represents the dataframe as a csv string.
+    :param dataframe: Dataframe object
+    :return str: Markdown table string
+    """
+    return dataframe.to_csv(index=False)
+
+
+def get_markdown_str_from_df(dataframe: object) -> str:
+    """
+    This will return a string that represents the dataframe as a markdown table.
+    :param dataframe: Dataframe object
+    :return str: Markdown table string
+    """
+    return dataframe.to_markdown()
+
+
+def get_tabulate_str_from_df(dataframe: object) -> str:
+    """
+    This will return a string that represents the dataframe as a table structure using tabulate.
+    :param dataframe: Dataframe object
+    :return str: Table string
+    """
+    return tabulate(dataframe, headers='keys', tablefmt='psql')
+
+
 def update_column_headers(logger: object, filename: str):
     """
     This will update the first line of the CSV file and replace spaces in the column headers with '_'
-    :param filename:
+    :param logger: Logger object
+    :param filename: Name of file to read
+    :return:
     """
     logger.info(f'Arguments passed in:\n'
                 f'filename: {filename}')
@@ -57,34 +97,61 @@ def update_column_headers(logger: object, filename: str):
 
 
 def category_sum_by_date(logger: object, dataframe: object, start_date: str, end_date: str):
-    """This will return the sum of amount between a range of dates"""
-    logger.info(f'start_date: {start_date}\n'
-          f'end_date: {end_date}')
+    """
+    This will return the sum of amount between a range of dates
+    :param logger: Logger object
+    :param dataframe: Dataframe object
+    :param start_date: Start date for query
+    :param end_date: End data for query
+    :return dataframe: Dataframe object with query results
+    """
+    logger.info(f'Arguments passed in:\n'
+                f'start_date: {start_date}\n'
+                f'end_date: {end_date}')
 
 
-    category_group_by_sum_sql = '''
-    select 
-    category,
-    sum(amount) as Amount
-    from df
-    group by category 
-    order by sum(amount) desc
+    category_group_by_sum_sql = f'''
+    SELECT 
+    CATEGORY,
+    SUM(CASE When TRANSACTION_TYPE = 'debit' Then AMOUNT*-1 Else AMOUNT End ) AS SUM_AMOUNT
+    FROM dataframe
+    WHERE DATE >= '{start_date}' and DATE <= '{end_date}' 
+    GROUP BY CATEGORY
+    ORDER BY CATEGORY
     '''
 
-    print(ps.sqldf(category_group_by_sum_sql))
+    logger.info(f'Query running: {category_group_by_sum_sql}')
+    category_sum_df = ps.sqldf(category_group_by_sum_sql)
+
+    return category_sum_df
+
+
+    #category_sum_dict = category_sum_df.to_dict()
+
+    #print(json.dumps(category_sum_dict, indent=1))
+    #print(category_sum_dict['CATEGORY'])
+
 
     #print( df.groupby(['Category']).sum('Amount') )
 
 
 def main():
+    # create logger
     my_logger = create_logger()
     filename = 'transactions.csv'
-    # read by default 1st sheet of an excel file
-    #df = pd.read_csv(filename)
 
-    #print(df)
-
+    # update column headers
     update_column_headers(my_logger, filename)
+
+    # read csv content into dataframe
+    df = get_df_from_csv(filename)
+
+    # get amount sum by category
+    category_sum_df = category_sum_by_date(my_logger, df, '11/01/2020', '11/30/2020')
+
+    print(get_csv_from_df(category_sum_df))
+
+
 
 
     exit(0)
