@@ -1,13 +1,11 @@
-"""This will label transaction types based on vendor."""
+"""Custom Pandas utilities."""
 
 import pandas as pd
 import pandasql as ps
 import logging
-
-from pandas import DataFrame
 from tabulate import tabulate
-from api.google.google_api import googleApiHelper
-import json
+
+LOGGER = logging.getLogger(f"{__name__}")
 
 def create_logger() -> object:
     # Gets or creates a logger
@@ -63,17 +61,15 @@ def get_tabulate_str_from_df(dataframe: object) -> str:
     return tabulate(dataframe, headers='keys', tablefmt='psql')
 
 
-def update_column_headers(logger: object, filename: str):
+def update_column_headers(filename: str):
     """
     This will update the first line of the CSV file and replace spaces in the column headers with '_'
     :param logger: Logger object
     :param filename: Name of file to read
     :return:
     """
-    logger.info(f'Arguments passed in:\n'
-                f'filename: {filename}')
-
-    logger.info(f'Starting column header updates...')
+    LOGGER.info("filename = %s", filename)
+    LOGGER.info(f'Starting column header updates...')
 
     # open file for reading and writing
     f = open(filename, 'r+')
@@ -96,7 +92,7 @@ def update_column_headers(logger: object, filename: str):
     # updating file with new file headers
     f.seek(0)
     f.write(full_file_text)
-    logger.info(f'File: {filename} has been updated with new column headers.')
+    LOGGER.info(f'File: {filename} has been updated with new column headers.')
 
 
 def column_header_formatter(header: str) -> str:
@@ -132,18 +128,17 @@ def create_df_from_list_of_lists(column_headers: list, data: list):
     return dataframe
 
 
-def category_sum_by_date(logger: object, dataframe: object, start_date: str, end_date: str) -> object:
+def category_sum_by_date(dataframe: object, start_date: str, end_date: str) -> object:
     """
-    This will return the sum of amount between a range of dates
-    :param logger: Logger object
+    This will return the sum of amount between a range of dates.
+
     :param dataframe: Dataframe object
     :param start_date: Start date for query
     :param end_date: End data for query
     :return dataframe: Dataframe object with query results
     """
-    logger.info(f'Arguments passed in:\n'
-                f'start_date: {start_date}\n'
-                f'end_date: {end_date}')
+    LOGGER.info("start_date = %s", start_date)
+    LOGGER.info("end_date = %s", end_date)
 
 
     category_group_by_sum_sql = f'''
@@ -156,49 +151,7 @@ def category_sum_by_date(logger: object, dataframe: object, start_date: str, end
     ORDER BY CATEGORY
     '''
 
-    logger.info(f'Query running: {category_group_by_sum_sql}')
+    LOGGER.info(f'Query running: {category_group_by_sum_sql}')
     category_sum_df = ps.sqldf(category_group_by_sum_sql)
 
     return category_sum_df
-
-def main():
-    my_logger = create_logger()
-    drive_service = googleApiHelper('drive', 'v3')
-    sheets_service = googleApiHelper('sheets', 'v4')
-    file_id = drive_service.get_file_id('All time transactions from Mint')
-    #print(file_id)
-    sheet_data = sheets_service.get_sheets_data(file_id)
-    column_headers = sheet_data.pop(0)
-    print(column_headers)
-    #print(sheet_data)
-
-    df = create_df_from_list_of_lists(column_headers, sheet_data)
-
-    category_sum_df = category_sum_by_date(my_logger, df, '11/01/2020', '11/30/2020')
-
-    print(get_tabulate_str_from_df(category_sum_df))
-
-    exit(0)
-    # create logger
-
-    filename = 'transactions.csv'
-
-    # update column headers
-    update_column_headers(my_logger, filename)
-
-    # read csv content into dataframe
-    df = get_df_from_csv(filename)
-
-    # get amount sum by category
-
-
-    print(get_csv_from_df(category_sum_df))
-
-
-
-
-    exit(0)
-
-
-if __name__ == '__main__':
-    main()

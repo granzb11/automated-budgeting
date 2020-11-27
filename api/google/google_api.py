@@ -5,12 +5,14 @@ Google API documentation found here:
 """
 
 from __future__ import print_function
-import pandas as pd
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import os.path
 import pickle
+import logging
+
+LOGGER = logging.getLogger(f"{__name__}")
 
 
 class googleApiHelper(object):
@@ -23,6 +25,9 @@ class googleApiHelper(object):
         :param str service: Google API Service.
         :param str version: Google API Service version.
         """
+        LOGGER.debug("service = %s", service)
+        LOGGER.debug("version = %s", version)
+
         creds = None
         scopes = {"sheets": "https://www.googleapis.com/auth/spreadsheets",
                   "drive": "https://www.googleapis.com/auth/drive.metadata.readonly"}
@@ -44,7 +49,7 @@ class googleApiHelper(object):
             with open(f'api/google/configs/token_{service}_{version}.pickle', 'wb') as token:
                 pickle.dump(creds, token)
 
-        print(f"Service created for: {service}.{version}")
+        LOGGER.info(f"Service created for: {service}.{version}")
 
         self.service = build(service, version, credentials=creds)
 
@@ -62,6 +67,8 @@ class googleApiHelper(object):
         :param str filename: Name of file.
         :return str file_id: File id found.
         """
+        LOGGER.debug("filename = %s", filename)
+
         file_id = None
         file_list = self.get_drive_files()
         for file in file_list:
@@ -70,17 +77,21 @@ class googleApiHelper(object):
 
         return file_id
 
-    def get_sheets_data(self, spreadsheet_id, range='A1:AA1000', majorDimension='ROWS') -> list:
+    def get_sheets_data(self, spreadsheet_id, range='A1:AA1000', major_dimension='ROWS') -> list:
         """
         This will return a list of lists with all spreadsheet data.
         :param str spreadsheet_id: Spreadsheet ID.
         :param str range: Ran
         :return:
         """
+        LOGGER.debug("spreadsheet_id = %s", spreadsheet_id)
+        LOGGER.debug("range = %s", range)
+        LOGGER.debug("major_dimensions = %s", major_dimension)
+
         results = self.service.spreadsheets().values().get(
             spreadsheetId=spreadsheet_id,
             range=range,
-            majorDimension=majorDimension).execute()
+            majorDimension=major_dimension).execute()
         result_values = results['values']
         return result_values
 
