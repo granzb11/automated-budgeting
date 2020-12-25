@@ -24,6 +24,12 @@ clean-targets:         # directories to be removed by `dbt clean`
     - "target"
     - "dbt_modules"
 
+seeds:
+  automated_budgeting:
+    +enabled: true
+    +schema: seed_data
+    transactions:
+      +schema: transactions
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -35,4 +41,4 @@ models:
   automated_budgeting:
       # Applies to all files under models/example/
       example:
-          materialized: view
+          +materialized: view
