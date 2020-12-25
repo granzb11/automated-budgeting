@@ -25,6 +25,14 @@ def create_logger() -> object:
     return logger
 
 
+def get_row_count(dataframe: object):
+    """
+    Function will return number of rows in a dataframe.
+    :param object dataframe: Dataframe to count.
+    :return integer: Number of rows in dataframe.
+    """
+    return len(dataframe.index)
+
 def get_df_from_csv(filename: str) -> object:
     """
     This will return a dataframe object given a csv filename.
@@ -123,10 +131,29 @@ def create_df_from_list_of_lists(column_headers: list, data: list):
         column_headers[i] = column_header_formatter(column_headers[i])
 
     # Create dataframe
-    dataframe = pd.DataFrame(data, columns=column_headers)
+    try:
+        dataframe = pd.DataFrame(data, columns=column_headers)
+    except ValueError as e:
+        print(f'Error: {e}')
+        print(f'Column headers: {column_headers}')
+        print(f'Data Row: {data[0]}')
+        exit(1)
 
     return dataframe
 
+
+def run_query(dataframe: object, query: str) -> object:
+    """
+    Function will run query passed in and return the result set as a dataframe
+    :param object dataframe: Dataframe to query.
+    :param str query: Query to run.
+    :return object dataframe: Result set as a dataframe
+    """
+    LOGGER.info("query = %s", query)
+
+    results_df = ps.sqldf(query)
+
+    return results_df
 
 def category_sum_by_date(dataframe: object, start_date: str, end_date: str) -> object:
     """
