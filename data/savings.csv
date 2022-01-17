@@ -1,4 +1,4 @@
-savings_name,savings_description,monthly_budget,bank_name,account_type,bank_account_name,bank_account_number,initial_amount,current_amount,initial_account_creation
+savings_name,savings_description,monthly_budget,institution_name,account_type,account_name,account_number,initial_amount,current_amount,initial_account_creation
 House,Savings for a house,400,Betterment,individual taxable,House,3635766,200,201.54,12/17/20
 Car,Savings for a car,200,Betterment,individual taxable,Car,3635774,100,100.98,12/17/20
 Travel,Savings for travelling,400,Betterment,individual taxable,Travel,3648911,50,50,12/26/20

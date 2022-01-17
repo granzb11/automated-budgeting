@@ -28,8 +28,6 @@ seeds:
   automated_budgeting:
     +enabled: true
     +schema: seed_data
-    transactions:
-      +schema: transactions
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -39,6 +37,7 @@ seeds:
 # using the `{{ config(...) }}` macro.
 models:
   automated_budgeting:
-      # Applies to all files under models/example/
-      example:
-          +materialized: view
+    transactions_hist:
+      +materialized: table
+    savings_ver:
+      +materialized: table

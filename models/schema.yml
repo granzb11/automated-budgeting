@@ -2,41 +2,89 @@
 version: 2
 
 models:
-    - name: transactions_model
-      description: "Model for transactions_ver table"
-      columns:
-          - name: transaction_id
-            description: "The primary key for this table"
-            tests:
-                - unique
-                - not_null
-          - name: transactions_date
-            description: "Date of transaction"
-            tests:
-              - not_null
--- transactions table
-CREATE TABLE IF NOT EXISTS mint_transactions_ver (
-	transaction_id integer PRIMARY KEY,
-	-- date of transaction
-	transaction_date text,
-	-- long description of transaction
-	description text,
-	-- original description of transaction
-	original_description text,
-	-- transaction amount
-	amount numeric,
-	-- type of transaction (debit or credit)
-	transaction_type text,
-	-- transaction category (grocceries, restaurant, clothes, etc.)
-	category text,
-	-- to what bank account the transaction was debited/credited
-	account_name,
-);
-    - name: my_second_dbt_model
-      description: "A starter dbt model"
-      columns:
-          - name: id
-            description: "The primary key for this table"
-            tests:
-                - unique
-                - not_null
+  - name: savings_ver
+    description: "Table that will hold all savings information in a versioned manner"
+    columns:
+      - name: savings_id
+        description: "The primary for this table"
+        tests:
+          - unique
+          - not_null
+      - name: savings_description
+        description: "Description of the savings account"
+        tests:
+          - not_null
+      - name: monthly_budget
+        description: "Monthly allocated amount that will be deposited into this account"
+        tests:
+          - not_null
+      - name: institution_name
+        description: "Name of the institution where this account is managed"
+        tests:
+          - not_null
+      - name: account_type
+        description: "Type of this account (savings, money market, etc.)"
+        tests:
+          - not_null
+      - name: account_name
+        description: "Name of the account"
+        tests:
+          - not_null
+      - name: account_number
+        description: "Unique identifier given to the account by the institution it's managed"
+        tests:
+          - not_null
+      - name: initial_amount
+        description: "Initial amount of money that was in the account"
+        tests:
+          - not_null
+      - name: current_amount
+        description: "Current amount of money in the account as of the as of date"
+        tests:
+          - not_null
+      - name: initial_account_creation_date
+        description: "Date when the account was initially created"
+        tests:
+          - not_null
+      - name: as_of_dt
+        description: "Date as of when this data is good for"
+        tests:
+          - not_null
+      - name: etl_batch_id
+        description: "Unique identifier for batch load, makes rollbacks easier"
+        tests:
+          - not_null
+  - name: transactions_hist
+    description: "Model for transactions_hist table"
+    columns:
+      - name: transaction_id
+        description: "The primary key for this table"
+        tests:
+            - unique
+            - not_null
+      - name: transaction_date
+        description: "Date of transaction"
+        tests:
+          - not_null
+      - name: description
+        description: "Long description of transaction"
+      - name: original_description
+        description: "Original description of transaction"
+      - name: transaction_amount
+        description: "Amount of transaction"
+        tests:
+          - not_null
+      - name: transaction_type
+        description: "Type of transaction (debit or credit)"
+        tests:
+          - not_null
+      - name: category
+        description: "Category to which transaction belongs to (restaurant, clothes, etc.)"
+        tests:
+          - not_null
+      - name: account_name
+        description: "To what bank account the transaction was debited/credited"
+        tests:
+          - not_null
+
+

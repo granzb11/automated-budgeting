@@ -9,7 +9,7 @@ with source_data as (
     transaction_type as transaction_type,
     category as category,
     account_name as account_name,
-    current_timestamp() as etl_ts,
+    format_datetime("%m-%d-%Y %T", current_datetime("America/New_York")) as etl_ts,
     from {{ ref('transactions') }}
 
 )

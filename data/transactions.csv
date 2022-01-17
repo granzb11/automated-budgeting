@@ -1,4 +1,4 @@
-"Date","Description","Original Description","Amount","Transaction Type","Category","Account Name","Labels","Notes"
+"transaction_date","description","original_description","transaction_amount","transaction_type","category","account_name","labels","notes"
 "11/25/2020","USAA CREDIT CARD PAYMENT","USAA CREDIT CARD PAYMENT","2500.00","credit","Credit Card Payment","Signature Visa","",""
 "11/25/2020","USAA PAYROLL INT PENDING DIRECT DEPOSIT","USAA PAYROLL INT PENDING DIRECT DEPOSIT","3571.21","credit","Paycheck","USAA CLASSIC CHECKING","",""
 "11/25/2020","USAA FUNDS TRANSFER DB TO ******8658","USAA FUNDS TRANSFER DB TO ******8658","4000.00","debit","Transfer","USAA CLASSIC CHECKING","",""
